@@ -33,10 +33,22 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-sequence_file', type=str, help='path to FASTA file')
     parser.add_argument('-diamond_program_path', help='path', required=True)
-    parser.add_argument('-output_folder', help='str', required=True)
+    parser.add_argument('-o', '-output_folder', dest='output_folder', help='output folder', required=True)
+    parser.add_argument(
+        '-t',
+        '-threads',
+        dest='threads',
+        type=int,
+        default=8,
+        help='number of CPU threads to use for PyTorch CPU inference and DIAMOND',
+    )
     args = parser.parse_args()
 
     prefix_location = args.output_folder
+    if args.threads < 1:
+        parser.error('-threads must be at least 1')
+
+    torch.set_num_threads(args.threads)
 
     try:
         fasta_record = list(SeqIO.parse(args.sequence_file, "fasta"))
@@ -73,7 +85,7 @@ if __name__ == '__main__':
 
     with open(diamond_input, 'r') as diamond_input_file:
         if diamond_input_file.readline():
-            diamond_func(diamond_input, diamond_pred_output, args.diamond_program_path, threads=160)
+            diamond_func(diamond_input, diamond_pred_output, args.diamond_program_path, threads=args.threads)
 
             with open(diamond_pred_output, 'r') as file:
                 if file.readline():

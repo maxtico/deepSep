@@ -48,11 +48,15 @@ To make predictions on new sequences, use the `main.py` script in the `predic
 Pass a FASTA file
 python prediction/main.py \
     -sequence_file [/path/to/your_sequence.fasta] \
-    -diamond_program_path [path_to_diamond_program]
+    -diamond_program_path [path_to_diamond_program] \
+    -o [output_folder] \
+    -threads [number_of_threads]
 ```
 Replace: \
 ·&nbsp;&nbsp;`[/path/to/your_sequence.fasta]` with the path to your **FASTA file** you want to predict. \
-·&nbsp;&nbsp;`[path_to_diamond_program]` with the path to your Diamond program installation.
+·&nbsp;&nbsp;`[path_to_diamond_program]` with the path to your Diamond program installation. \
+·&nbsp;&nbsp;`[output_folder]` with the folder where results should be written. \
+·&nbsp;&nbsp;`[number_of_threads]` with the number of CPU threads to use for PyTorch CPU inference and Diamond.
 
 The script will: \
 ·&nbsp;&nbsp;Generate a `temporary (tmp)` folder under the `prediction` folder. \
