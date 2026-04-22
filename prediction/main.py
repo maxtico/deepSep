@@ -91,9 +91,15 @@ if __name__ == '__main__':
                 if file.readline():
                     preliminary_result = analysis(result_output_dir, diamond_pred_output)
 
-                    DeepSep_result = df_sentences[df_sentences['header'].isin(preliminary_result['qseqid'])]
+                    DeepSep_result = df_sentences[
+                        df_sentences['header'].apply(normalize_query_id).isin(preliminary_result['qseqid'])
+                    ]
 
-                    DeepSep_result[['header', 'nt', 'nr']].to_csv(f'{prefix_location}/final_results.csv', index=False)
+                    if DeepSep_result.empty:
+                        with open(f'{prefix_location}/final_results.txt', 'w') as final_file:
+                            final_file.write('Not Find Any Selenoproteins.')
+                    else:
+                        DeepSep_result[['header', 'nt', 'nr']].to_csv(f'{prefix_location}/final_results.csv', index=False)
 
                 else:
                     with open(f'{prefix_location}/final_results.txt', 'w') as final_file:

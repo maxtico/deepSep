@@ -4,8 +4,13 @@ import pandas as pd
 import re
 
 
+def normalize_query_id(query_id):
+    return str(query_id).strip().lstrip('>')
+
+
 def get_queries(diamond_input, whole_df, queries_file_name):
-    pre_pos = diamond_input[diamond_input['pre_label'] == 1]
+    pre_pos = diamond_input[diamond_input['pre_label'] == 1].copy()
+    whole_df = whole_df.copy()
 
     pre_pos['header'] = pre_pos['header'].apply(lambda x: '>' + str(x) if '>' not in str(x) else str(x))
     whole_df['header'] = whole_df['header'].apply(lambda x: '>' + str(x) if '>' not in str(x) else str(x))
@@ -124,13 +129,24 @@ def write(seqs, out_path, file_name):
             for item in seqs:
                 if isinstance(item, tuple):
                     qseqid, qseq, stitle, sseq = item
-                    f.write(f'>{qseqid}\n')
+                    f.write(f'{normalize_query_id(qseqid)}\n')
                 elif isinstance(item, list):
                     for i in item:
                         qseqid, qseq, stitle, sseq = i
-                        f.write(f'>{qseqid}\n')
+                        f.write(f'{normalize_query_id(qseqid)}\n')
         else:
-            f.write('None')
+            pass
+
+
+def matched_query_ids(seqs):
+    query_ids = []
+    for item in seqs:
+        if isinstance(item, tuple):
+            query_ids.append(normalize_query_id(item[0]))
+        elif isinstance(item, list):
+            query_ids.extend(normalize_query_id(i[0]) for i in item)
+
+    return pd.DataFrame({'qseqid': sorted(set(query_ids))})
 
 
 def analysis(result_output_dir, diamond_pred_results):
@@ -152,4 +168,4 @@ def analysis(result_output_dir, diamond_pred_results):
 
         print('Candidates: ' + str(len(all_matched_seqs_tup)), file=f, flush=True)
 
-    return pd.read_csv(os.path.join(result_output_dir, 'preliminary_result.csv'), names=['qseqid'])
+    return matched_query_ids(all_matched_seqs_tup)
