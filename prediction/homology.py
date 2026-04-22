@@ -26,7 +26,7 @@ def diamond_func(query, out, program_path, threads):
     logging.info('DIAMOND prediction starts on the dataset')
 
     program = program_path # './diamond_v2.1.8/diamond'
-    db_path = '/home/xiaoyao/data1/deep-Sep/model/diamond/db.dmnd'
+    db_path = '/Lobster/mtico/selenium_usage_prokaryotes/deepSep/model/diamond/db.dmnd'
     outfmt = '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send sseq_gapped qseq_gapped evalue bitscore'
 
     command = f"{program} blastp --db {db_path} -q {query} --out {out} --outfmt {outfmt} --threads {threads} --masking 0 --ultra-sensitive --max-target-seqs 100 --id 20 -e 1e-2"
@@ -93,7 +93,7 @@ def find_UC(df):
         if qseq_loca_U:
             if any(qseq[i] == 'X' and sseq[i] == 'C' for i in qseq_loca_U):
                 if genome not in genomes and sseq not in sseqs:
-                    candidate_seqs.append((qseqid, qseq))
+                    candidate_seqs.append((qseqid, qseq, stitle, sseq))
                     genomes.add(genome)
                     sseqs.add(sseq)
         else:

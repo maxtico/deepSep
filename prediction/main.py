@@ -33,9 +33,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-sequence_file', type=str, help='path to FASTA file')
     parser.add_argument('-diamond_program_path', help='path', required=True)
+    parser.add_argument('-output_folder', help='str', required=True)
     args = parser.parse_args()
 
-    prefix_location = f'./tmp'
+    prefix_location = args.output_folder
 
     try:
         fasta_record = list(SeqIO.parse(args.sequence_file, "fasta"))
@@ -50,10 +51,10 @@ if __name__ == '__main__':
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    tokenizer = AutoTokenizer.from_pretrained('../model/tokenizer')
-    model = DeepSep_neural_net(AutoModel.from_pretrained('../model/checkpoint-11007')).to(device)
-    checkpoint = torch.load('../model/best_checkpoint.pth.tar', map_location=torch.device(device))
-    model.load_state_dict(checkpoint['state_dict'])
+    tokenizer = AutoTokenizer.from_pretrained('/Lobster/mtico/selenium_usage_prokaryotes/deepSep_max/model/tokenizer')
+    model = DeepSep_neural_net(AutoModel.from_pretrained('/Lobster/mtico/selenium_usage_prokaryotes/deepSep_max/model/checkpoint-11007')).to(device)
+    checkpoint = torch.load('/Lobster/mtico/selenium_usage_prokaryotes/deepSep_max/model/best_checkpoint.pth.tar', map_location=torch.device(device))
+    model.load_state_dict(checkpoint['state_dict'], strict=False)
 
     DeepSep_dataset = DeepSepDataset(df_sentences, max_length=300, tokenizer=tokenizer)
     DeepSep_dataloader = DataLoader(DeepSep_dataset, batch_size=1024, shuffle=False)
